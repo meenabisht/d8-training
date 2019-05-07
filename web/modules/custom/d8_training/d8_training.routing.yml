@@ -33,3 +33,11 @@ d8_training.permission_access:
     _controller: '\Drupal\d8_training\Controller\PermissionController::accesscontent'
   requirements:
     _access: 'TRUE'
+
+d8_training.check-access:
+  path: '/list/{node}'
+  defaults:
+    _controller: '\Drupal\d8_training\Controller\PermissionController::content'
+    _title: ''
+  requirements:
+    _d8_training_access_check: 'TRUE'
