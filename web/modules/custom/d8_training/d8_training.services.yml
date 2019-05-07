@@ -1,0 +1,6 @@
+services:
+  d8_training.access_checker:
+    class: Drupal\d8_training\Access\CustomAccessCheck
+    arguments: ['@current_user']
+    tags:
+      - { name: access_check, applies_to: _d8_training_access_check }
