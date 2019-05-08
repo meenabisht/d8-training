@@ -41,3 +41,10 @@ d8_training.check-access:
     _title: ''
   requirements:
     _d8_training_access_check: 'TRUE'
+
+d8_training.conteoller-check-access:
+  path: 'check/list/{node}'
+  defaults:
+    _controller: '\Drupal\d8_training\Controller\PermissionController::content'
+  requirements:
+    _custom_access: '\Drupal\d8_training\Controller\PermissionController::access'

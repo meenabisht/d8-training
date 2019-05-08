@@ -46,4 +46,17 @@ class PermissionController extends ControllerBase {
       '#markup' => $this->t('you can access the content.'),
     ];    
   }
+
+  public function access(AccountInterface $account) {
+    $current_path = \Drupal::service('path.current')->getPath();
+    $nid = explode('/', $current_path );
+    $service = \Drupal::service('entity_type.manager')->getStorage('node')->load($nid[2]);
+    if ($service->getOwnerId() === $account->id() && $account->isAuthenticated()) {
+      return AccessResult::allowed();
+    }
+    else {
+      return AccessResult::forbidden();
+    }
+  }
+
 }
