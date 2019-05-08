@@ -5,6 +5,7 @@ namespace Drupal\d8_training\Access;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
+use Drupal\Core\Entity\EntityTypeManager;
 
 /**
  * Checks access for displaying configuration translation page.
@@ -22,10 +23,16 @@ class CustomAccessCheck implements AccessInterface{
    *   The access result.
    */
   public function access(AccountInterface $account) {
-    // Check permissions and combine that with any custom access checking needed. Pass forward
-    // parameters from the route and/or request as needed.
-    // return ($account->hasPermission('do example things') && $this->someOtherCustomCondition()) ? AccessResult::allowed() : AccessResult::forbidden();
-    kint($account);
+    $current_path = \Drupal::service('path.current')->getPath();
+    $nid = explode('/', $current_path );
+    $service = \Drupal::service('entity_type.manager')->getStorage('node')->load($nid[2]);
+    if ($service->getOwnerId() === $account->id() && $account->isAuthenticated()) {
+      return AccessResult::allowed();
+    }
+    else {
+      return AccessResult::forbidden();
+    }
   }
-
 }
+
+
