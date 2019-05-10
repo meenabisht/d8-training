@@ -3,6 +3,11 @@
 namespace Drupal\d8_training\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\node\NodeInterface;
+use Drupal\node\Entity\Node;
+use Drupal\user\Entity\User;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * A Permission Controller.
@@ -12,11 +17,12 @@ class PermissionController extends ControllerBase {
   /**
    * Returns a render-able array for a permission.
    */
-  public function content() {
-    return [
+  public function content(NodeInterface $node) {
+    $author = $node->getOwnerId();
+		return [
       '#type' => 'markup',
-      '#markup' => $this->t('Hello Meena You have the permission!'),
-    ];    
+      '#markup' => 'Hello' . $author,
+    ];  
   }
 
   public function rolecontent() {
@@ -46,12 +52,15 @@ class PermissionController extends ControllerBase {
       '#markup' => $this->t('you can access the content.'),
     ];    
   }
+  // $user - who is current logged in object
+  // $account - object of anyone who has the account in the website
 
-  public function access(AccountInterface $account) {
-    $current_path = \Drupal::service('path.current')->getPath();
-    $nid = explode('/', $current_path );
-    $service = \Drupal::service('entity_type.manager')->getStorage('node')->load($nid[2]);
-    if ($service->getOwnerId() === $account->id() && $account->isAuthenticated()) {
+  public function access(NodeInterface $node) {
+    $nid = $node->getOwnerId();	
+    $user = \Drupal::currentUser(); 
+    $uid = $user->id();
+     
+    if ($nid === $uid && $user->isAuthenticated()) {
       return AccessResult::allowed();
     }
     else {
@@ -60,3 +69,5 @@ class PermissionController extends ControllerBase {
   }
 
 }
+
+ 

@@ -2,16 +2,37 @@
 
 namespace Drupal\d8_training\Access;
 
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
-use Drupal\Core\Entity\EntityTypeManager;
-
+use Drupal\node\NodeInterface;
+use Drupal\node\Entity\Node;
+use Drupal\user\Entity\User;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 /**
  * Checks access for displaying configuration translation page.
  */
 class CustomAccessCheck implements AccessInterface{
 
+  protected $currentUser;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(AccountProxyInterface $current_user) {
+    $this->currentUser = $current_user;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('current_user')
+    );
+  }
 
   /**
    * A custom access check.
@@ -22,11 +43,11 @@ class CustomAccessCheck implements AccessInterface{
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result.
    */
-  public function access(AccountInterface $account) {
-    $current_path = \Drupal::service('path.current')->getPath();
-    $nid = explode('/', $current_path );
-    $service = \Drupal::service('entity_type.manager')->getStorage('node')->load($nid[2]);
-    if ($service->getOwnerId() === $account->id() && $account->isAuthenticated()) {
+  public function access(NodeInterface $node) {
+    $nid = $node->getOwnerId();	
+    $user = $this->currentUser;
+    $uid = $user->id();
+    if ($nid === $uid && $user->isAuthenticated())  {
       return AccessResult::allowed();
     }
     else {
@@ -34,5 +55,3 @@ class CustomAccessCheck implements AccessInterface{
     }
   }
 }
-
-
