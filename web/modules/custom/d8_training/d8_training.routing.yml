@@ -48,3 +48,11 @@ d8_training.conteoller-check-access:
     _controller: '\Drupal\d8_training\Controller\PermissionController::content'
   requirements:
     _custom_access: '\Drupal\d8_training\Controller\PermissionController::access'
+
+d8_training.site_info:
+  path: '/node/{node}/site_key'
+  defaults:
+    _controller: 'Drupal\d8_training\Controller\SiteController::content'
+  requirements:
+    _permission: 'access content'
+    _access: 'TRUE'
